@@ -2,6 +2,8 @@ let selectedWords = [];
 let remainingTries = 4;
 let gameActive = true;
 let categoriesSolved = 0;
+let currentTargetRow = 0;
+const gridColumns = 4;
 
 function initializeGame() {
     const gameGrid = document.getElementById('gameGrid');
@@ -64,8 +66,64 @@ async function handleCorrectCategory(category) {
         category.words.includes(box.textContent)
     );
 
-    await animateMerge(wordElements, category);
+    await mergeCategory(wordElements, category);
     checkGameEnd();
+}
+
+// Add these helper functions
+function getTargetPositions(rowIndex) {
+    const startPos = rowIndex * gridColumns;
+    return Array.from({length: gridColumns}, (_, i) => startPos + i);
+}
+
+async function animateToPosition(element, targetIndex) {
+    const grid = document.getElementById('gameGrid');
+    const targetCell = grid.children[targetIndex];
+    const targetRect = targetCell.getBoundingClientRect();
+    const gridRect = grid.getBoundingClientRect();
+    
+    // Calculate relative positions
+    const x = targetRect.left - gridRect.left;
+    const y = targetRect.top - gridRect.top;
+    
+    // Animate using Web Animations API
+    const animation = element.animate([
+        { transform: `translate(${x}px, ${y}px) scale(1)` },
+        { transform: `translate(${x}px, ${y}px) scale(0.1)` }
+    ], {
+        duration: 600,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+    });
+
+    await animation.finished;
+}
+
+async function mergeCategory(words, category) {
+    const grid = document.getElementById('gameGrid');
+    const targetRow = currentTargetRow++;
+    const targetIndices = getTargetPositions(targetRow);
+    
+    // Animate all words to their target positions
+    await Promise.all(words.map((word, index) => 
+        animateToPosition(word, targetIndices[index])
+    ));
+
+    // Create merged category box
+    const categoryBox = document.createElement('div');
+    categoryBox.className = `category-box ${category.color} merged`;
+    categoryBox.innerHTML = `
+        <div><strong>${category.name}</strong></div>
+        <div>${category.words.join(', ')}</div>
+    `;
+
+    // Replace target cells with merged box
+    targetIndices.forEach(index => {
+        if (index < grid.children.length) {
+            grid.children[index].style.visibility = 'hidden';
+        }
+    });
+    
+    grid.insertBefore(categoryBox, grid.children[targetIndices[0]]);
 }
 
 // Add these helper functions
@@ -133,7 +191,7 @@ async function revealAnswers() {
             category.words.includes(box.textContent)
         );
         
-        await animateMerge(wordElements, category);
+        await mergeCategory(wordElements, category);
         await new Promise(resolve => setTimeout(resolve, 500));
     }
 }

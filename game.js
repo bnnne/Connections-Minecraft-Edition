@@ -78,33 +78,29 @@ function handleCorrectCategory(category) {
 }
 
 function revealAnswers() {
-    const gameGrid = document.getElementById('gameGrid');
-    const messageDiv = document.getElementById('message');
-    messageDiv.innerHTML = "<p>Game Over! Here are the answers:</p>";
-
-    // Sort unsolved categories by priority
     const unsolvedCategories = Object.values(categories)
-        .filter(category => !category.solved) // Only include unsolved categories
+        .filter(category => !category.solved)
         .sort((a, b) => categoryPriority.indexOf(a.color) - categoryPriority.indexOf(b.color));
 
-    // Display answers one by one with a delay
+    // Reveal answers one by one in priority order
     unsolvedCategories.forEach((category, index) => {
         setTimeout(() => {
-            // Remove all words from the grid that belong to this category
+            // Remove words from the grid
+            const gameGrid = document.getElementById('gameGrid');
             Array.from(gameGrid.children).forEach(box => {
                 if (category.words.includes(box.textContent)) {
                     box.remove();
                 }
             });
 
-            // Create a new category box and add it to the grid
+            // Add the category to the categoriesContainer (like a correct guess)
             const categoryBox = document.createElement('div');
             categoryBox.className = `category-box ${category.color}`;
             categoryBox.innerHTML = `
                 <div><strong>${category.name}</strong></div>
                 <div>${category.words.join(', ')}</div>
             `;
-            gameGrid.appendChild(categoryBox);
+            document.getElementById('categoriesContainer').appendChild(categoryBox);
         }, index * 1000); // 1-second delay between each category
     });
 }
@@ -115,7 +111,8 @@ function handleIncorrectSubmit() {
     
     if (remainingTries === 0) {
         gameActive = false;
-        revealAnswers(); // Reveal answers when all tries are used
+        document.getElementById('message').textContent = "you were prob close lol..... or not";
+        revealAnswers(); // Reveal answers in the grid
     }
 }
 
@@ -148,9 +145,6 @@ function checkGameEnd() {
     if (categoriesSolved === 4) {
         gameActive = false;
         document.getElementById('message').textContent = "YAY!!! u did it :D didn't think u could honestly";
-    } else if (remainingTries === 0) {
-        gameActive = false;
-        revealAnswers(); // Reveal answers when all tries are used
     }
 }
 

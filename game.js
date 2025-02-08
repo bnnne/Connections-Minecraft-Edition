@@ -78,6 +78,7 @@ function handleCorrectCategory(category) {
 }
 
 function revealAnswers() {
+    const gameGrid = document.getElementById('gameGrid');
     const messageDiv = document.getElementById('message');
     messageDiv.innerHTML = "<p>Game Over! Here are the answers:</p>";
 
@@ -89,21 +90,21 @@ function revealAnswers() {
     // Display answers one by one with a delay
     unsolvedCategories.forEach((category, index) => {
         setTimeout(() => {
-            // Check if the category box already exists in the message div
-            const existingBox = Array.from(messageDiv.children).find(child =>
-                child.textContent.includes(category.name)
-            );
+            // Remove all words from the grid that belong to this category
+            Array.from(gameGrid.children).forEach(box => {
+                if (category.words.includes(box.textContent)) {
+                    box.remove();
+                }
+            });
 
-            // If the category box doesn't already exist, create and append it
-            if (!existingBox) {
-                const categoryBox = document.createElement('div');
-                categoryBox.className = `category-box ${category.color}`;
-                categoryBox.innerHTML = `
-                    <div><strong>${category.name}</strong></div>
-                    <div>${category.words.join(', ')}</div>
-                `;
-                messageDiv.appendChild(categoryBox);
-            }
+            // Create a new category box and add it to the grid
+            const categoryBox = document.createElement('div');
+            categoryBox.className = `category-box ${category.color}`;
+            categoryBox.innerHTML = `
+                <div><strong>${category.name}</strong></div>
+                <div>${category.words.join(', ')}</div>
+            `;
+            gameGrid.appendChild(categoryBox);
         }, index * 1000); // 1-second delay between each category
     });
 }

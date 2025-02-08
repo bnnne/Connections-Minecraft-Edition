@@ -89,20 +89,25 @@ function handleCorrectCategory(category) {
 
 function revealAnswers() {
     const messageDiv = document.getElementById('message');
-    let answersHtml = "<p>Game Over! Here are the answers:</p>";
+    messageDiv.innerHTML = "<p>Game Over! Here are the answers:</p>";
 
-    Object.values(categories).forEach(category => {
-        if (!category.solved) {
-            answersHtml += `
-                <div class="category-box ${category.color}">
-                    <div><strong>${category.name}</strong></div>
-                    <div>${category.words.join(', ')}</div>
-                </div>
+    // Sort unsolved categories by priority
+    const unsolvedCategories = Object.values(categories)
+        .filter(category => !category.solved)
+        .sort((a, b) => categoryPriority.indexOf(a.color) - categoryPriority.indexOf(b.color));
+
+    // Display answers one by one with a delay
+    unsolvedCategories.forEach((category, index) => {
+        setTimeout(() => {
+            const categoryBox = document.createElement('div');
+            categoryBox.className = `category-box ${category.color}`;
+            categoryBox.innerHTML = `
+                <div><strong>${category.name}</strong></div>
+                <div>${category.words.join(', ')}</div>
             `;
-        }
+            messageDiv.appendChild(categoryBox);
+        }, index * 1000); // 1-second delay between each category
     });
-
-    messageDiv.innerHTML = answersHtml;
 }
 
 function handleIncorrectSubmit() {

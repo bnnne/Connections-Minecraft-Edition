@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+#gameGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 800px;
+}
+
+.word-box {
+    background-color: white;
+    border: 2px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    user-select: none;
+}
+
+.word-box.selected {
+    background-color: #333;
+    color: white;
+}
+
+#categoriesContainer {
+    width: 800px;
+    margin-bottom: 20px;
+}
+
+.category-box {
+    color: white;
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#triesContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#triesCircles {
+    display: flex;
+    gap: 5px;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background-color: #333;
+}
+
+.circle.white {
+    background-color: white;
+}
+
+#buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#message {
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.category-box.purple { background-color: #8A2BE2; }
+.category-box.blue { background-color: #1E90FF; }
+.category-box.green { background-color: #228B22; }
+.category-box.yellow { background-color: #FFD700; }

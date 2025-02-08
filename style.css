@@ -59,11 +59,12 @@ h1 {
     margin: 5px 0;
     border-radius: 5px;
     text-align: center;
-    font-weight: normal; /* Reset font-weight for the entire box */
+    font-weight: normal; /* Default font weight for the words */
 }
 
-.category-box strong {
+.category-box div:first-child {
     font-weight: bold; /* Bold the category name */
+    margin-bottom: 10px; /* Add spacing between the name and the words */
 }
 
 #triesContainer {

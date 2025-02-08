@@ -1,3 +1,5 @@
+const categoryPriority = ['purple', 'blue', 'green', 'yellow'];
+
 const categories = {
     purple: {
         name: "unstackable items",

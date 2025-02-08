@@ -27,8 +27,15 @@ h1 {
     padding: 15px;
     text-align: center;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 10px; /* Rounded corners */
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px; /* Fixed height */
+    font-size: 14px; /* Adjust font size to fit text */
+    box-sizing: border-box; /* Ensure padding is included in the height/width */
+    word-break: break-word; /* Handle long words */
 }
 
 .word-box.selected {

@@ -87,13 +87,31 @@ function handleCorrectCategory(category) {
     });
 }
 
+function revealAnswers() {
+    const messageDiv = document.getElementById('message');
+    let answersHtml = "<p>Game Over! Here are the answers:</p>";
+
+    Object.values(categories).forEach(category => {
+        if (!category.solved) {
+            answersHtml += `
+                <div class="category-box ${category.color}">
+                    <div><strong>${category.name}</strong></div>
+                    <div>${category.words.join(', ')}</div>
+                </div>
+            `;
+        }
+    });
+
+    messageDiv.innerHTML = answersHtml;
+}
+
 function handleIncorrectSubmit() {
     remainingTries--;
     updateTriesDisplay();
     
     if (remainingTries === 0) {
         gameActive = false;
-        document.getElementById('message').textContent = "you were prob close lol..... or not";
+        revealAnswers(); // Reveal answers when all tries are used
     }
 }
 
@@ -126,6 +144,9 @@ function checkGameEnd() {
     if (categoriesSolved === 4) {
         gameActive = false;
         document.getElementById('message').textContent = "YAY!!! u did it :D didn't think u could honestly";
+    } else if (remainingTries === 0) {
+        gameActive = false;
+        revealAnswers(); // Reveal answers when all tries are used
     }
 }
 

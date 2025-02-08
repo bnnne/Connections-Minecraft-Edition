@@ -56,25 +56,72 @@ function submitGroup() {
 }
 
 function handleCorrectCategory(category) {
-    category.solved = true; // This marks the category as solved
+    category.solved = true;
     categoriesSolved++;
+    
+    // Get all word elements for this category
+    const gameGrid = document.getElementById('gameGrid');
+    const wordElements = Array.from(gameGrid.children).filter(box => 
+        category.words.includes(box.textContent)
+    );
 
-    // Move words to category display
+    // Animate the merge
+    animateMerge(wordElements, category);
+    checkGameEnd();
+}
+
+// Add these helper functions
+function animateMerge(words, category) {
+    // Get target position in categories container
+    const categoriesContainer = document.getElementById('categoriesContainer');
+    const targetPosition = categoriesContainer.getBoundingClientRect();
+    const targetX = targetPosition.left + window.scrollX;
+    const targetY = targetPosition.top + window.scrollY + (categoriesContainer.children.length * 70);
+
+    // Animate each word
+    words.forEach((wordElem, index) => {
+        // Clone the element for animation
+        const clone = wordElem.cloneNode(true);
+        clone.classList.add('animating');
+        document.body.appendChild(clone);
+
+        // Get original position
+        const rect = wordElem.getBoundingClientRect();
+        clone.style.position = 'absolute';
+        clone.style.left = `${rect.left}px`;
+        clone.style.top = `${rect.top}px`;
+
+        // Remove original element immediately
+        wordElem.remove();
+
+        // Animate to target position with staggered delay
+        setTimeout(() => {
+            clone.style.left = `${targetX}px`;
+            clone.style.top = `${targetY}px`;
+            clone.style.transform = 'scale(0.5)';
+            clone.style.opacity = '0.5';
+
+            // Remove clone and create category box after animation
+            if (index === words.length - 1) {
+                setTimeout(() => {
+                    document.body.removeChild(clone);
+                    createCategoryBox(category, targetY);
+                }, 500);
+            }
+        }, index * 100);
+    });
+}
+
+function createCategoryBox(category, targetY) {
     const categoryBox = document.createElement('div');
-    categoryBox.className = `category-box ${category.color}`;
+    categoryBox.className = `category-box ${category.color} reveal`;
     categoryBox.innerHTML = `
         <div><strong>${category.name}</strong></div>
         <div>${category.words.join(', ')}</div>
     `;
+    
+    // Add to categories container
     document.getElementById('categoriesContainer').appendChild(categoryBox);
-
-    // Remove words from grid
-    const gameGrid = document.getElementById('gameGrid');
-    Array.from(gameGrid.children).forEach(box => {
-        if (category.words.includes(box.textContent)) {
-            box.remove();
-        }
-    });
 }
 
 function revealAnswers() {
@@ -82,26 +129,15 @@ function revealAnswers() {
         .filter(category => !category.solved)
         .sort((a, b) => categoryPriority.indexOf(a.color) - categoryPriority.indexOf(b.color));
 
-    // Reveal answers one by one in priority order
     unsolvedCategories.forEach((category, index) => {
         setTimeout(() => {
-            // Remove words from the grid
             const gameGrid = document.getElementById('gameGrid');
-            Array.from(gameGrid.children).forEach(box => {
-                if (category.words.includes(box.textContent)) {
-                    box.remove();
-                }
-            });
-
-            // Add the category to the categoriesContainer (like a correct guess)
-            const categoryBox = document.createElement('div');
-            categoryBox.className = `category-box ${category.color}`;
-            categoryBox.innerHTML = `
-                <div><strong>${category.name}</strong></div>
-                <div>${category.words.join(', ')}</div>
-            `;
-            document.getElementById('categoriesContainer').appendChild(categoryBox);
-        }, index * 1000); // 1-second delay between each category
+            const wordElements = Array.from(gameGrid.children).filter(box => 
+                category.words.includes(box.textContent)
+            );
+            
+            animateMerge(wordElements, category);
+        }, index * 1000);
     });
 }
 
@@ -112,7 +148,7 @@ function handleIncorrectSubmit() {
     if (remainingTries === 0) {
         gameActive = false;
         document.getElementById('message').textContent = "you were prob close lol..... or not";
-        revealAnswers(); // Reveal answers in the grid
+        revealAnswers();
     }
 }
 

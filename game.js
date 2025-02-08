@@ -2,8 +2,6 @@ let selectedWords = [];
 let remainingTries = 4;
 let gameActive = true;
 let categoriesSolved = 0;
-let currentTargetRow = 0;
-const gridColumns = 4;
 
 function initializeGame() {
     const gameGrid = document.getElementById('gameGrid');
@@ -57,227 +55,53 @@ function submitGroup() {
     checkGameEnd();
 }
 
-async function handleCorrectCategory(category) {
-    category.solved = true;
+function handleCorrectCategory(category) {
+    category.solved = true; // This marks the category as solved
     categoriesSolved++;
-    
-    const gameGrid = document.getElementById('gameGrid');
-    const wordElements = Array.from(gameGrid.children).filter(box => 
-        category.words.includes(box.textContent)
-    );
 
-    await mergeCategory(wordElements, category);
-    checkGameEnd();
-}
-
-// Add these helper functions
-function getTargetPositions(rowIndex) {
-    const startPos = rowIndex * gridColumns;
-    return Array.from({length: gridColumns}, (_, i) => startPos + i);
-}
-
-async function animateToPosition(element, targetIndex) {
-    const grid = document.getElementById('gameGrid');
-    const targetCell = grid.children[targetIndex];
-    const targetRect = targetCell.getBoundingClientRect();
-    const gridRect = grid.getBoundingClientRect();
-    
-    // Calculate relative positions
-    const x = targetRect.left - gridRect.left;
-    const y = targetRect.top - gridRect.top;
-    
-    // Animate using Web Animations API
-    const animation = element.animate([
-        { transform: `translate(${x}px, ${y}px) scale(1)` },
-        { transform: `translate(${x}px, ${y}px) scale(0.1)` }
-    ], {
-        duration: 600,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-    });
-
-    await animation.finished;
-}
-
-async function mergeCategory(words, category) {
-    const grid = document.getElementById('gameGrid');
-    const targetRow = currentTargetRow++;
-    const targetIndices = getTargetPositions(targetRow);
-    
-    // Animate all words to their target positions
-    await Promise.all(words.map((word, index) => 
-        animateToPosition(word, targetIndices[index])
-    ));
-
-    // Create merged category box
+    // Move words to category display
     const categoryBox = document.createElement('div');
-    categoryBox.className = `category-box ${category.color} merged`;
+    categoryBox.className = `category-box ${category.color}`;
     categoryBox.innerHTML = `
         <div><strong>${category.name}</strong></div>
         <div>${category.words.join(', ')}</div>
     `;
+    document.getElementById('categoriesContainer').appendChild(categoryBox);
 
-    // Replace target cells with merged box
-    targetIndices.forEach(index => {
-        if (index < grid.children.length) {
-            grid.children[index].style.visibility = 'hidden';
+    // Remove words from grid
+    const gameGrid = document.getElementById('gameGrid');
+    Array.from(gameGrid.children).forEach(box => {
+        if (category.words.includes(box.textContent)) {
+            box.remove();
         }
     });
-    
-    grid.insertBefore(categoryBox, grid.children[targetIndices[0]]);
 }
 
-// Add these helper functions
-function animateMerge(words, category) {
-    // Get target position in categories container
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    const targetPosition = categoriesContainer.getBoundingClientRect();
-    const targetX = targetPosition.left + window.scrollX;
-    const targetY = targetPosition.top + window.scrollY + (categoriesContainer.children.length * 70);
-
-    // Animate each word
-    words.forEach((wordElem, index) => {
-        // Clone the element for animation
-        const clone = wordElem.cloneNode(true);
-        clone.classList.add('animating');
-        document.body.appendChild(clone);
-
-        // Get original position
-        const rect = wordElem.getBoundingClientRect();
-        clone.style.position = 'absolute';
-        clone.style.left = `${rect.left}px`;
-        clone.style.top = `${rect.top}px`;
-
-        // Remove original element immediately
-        wordElem.remove();
-
-        // Animate to target position with staggered delay
-        setTimeout(() => {
-            clone.style.left = `${targetX}px`;
-            clone.style.top = `${targetY}px`;
-            clone.style.transform = 'scale(0.5)';
-            clone.style.opacity = '0.5';
-
-            // Remove clone and create category box after animation
-            if (index === words.length - 1) {
-                setTimeout(() => {
-                    document.body.removeChild(clone);
-                    createCategoryBox(category, targetY);
-                }, 500);
-            }
-        }, index * 100);
-    });
-}
-
-function createCategoryBox(category, targetY) {
-    const categoryBox = document.createElement('div');
-    categoryBox.className = `category-box ${category.color} reveal`;
-    categoryBox.innerHTML = `
-        <div><strong>${category.name}</strong></div>
-        <div>${category.words.join(', ')}</div>
-    `;
-    
-    // Add to categories container
-    document.getElementById('categoriesContainer').appendChild(categoryBox);
-}
-
-async function revealAnswers() {
+function revealAnswers() {
     const unsolvedCategories = Object.values(categories)
         .filter(category => !category.solved)
         .sort((a, b) => categoryPriority.indexOf(a.color) - categoryPriority.indexOf(b.color));
 
-    for (const category of unsolvedCategories) {
-        const gameGrid = document.getElementById('gameGrid');
-        const wordElements = Array.from(gameGrid.children).filter(box => 
-            category.words.includes(box.textContent)
-        );
-        
-        await mergeCategory(wordElements, category);
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-}
+    // Reveal answers one by one in priority order
+    unsolvedCategories.forEach((category, index) => {
+        setTimeout(() => {
+            // Remove words from the grid
+            const gameGrid = document.getElementById('gameGrid');
+            Array.from(gameGrid.children).forEach(box => {
+                if (category.words.includes(box.textContent)) {
+                    box.remove();
+                }
+            });
 
-async function animateMerge(words, category) {
-    // Create temporary container for animation
-    const animationContainer = document.createElement('div');
-    animationContainer.style.position = 'fixed';
-    animationContainer.style.pointerEvents = 'none';
-    document.body.appendChild(animationContainer);
-
-    // Get target position in categories container
-    const categoriesContainer = document.getElementById('categoriesContainer');
-    const targetRect = categoriesContainer.getBoundingClientRect();
-    const targetPosition = {
-        x: targetRect.left + window.scrollX,
-        y: targetRect.top + window.scrollY + (categoriesContainer.children.length * 70)
-    };
-
-    // Create clones for animation
-    const clones = words.map(word => {
-        const clone = word.cloneNode(true);
-        const rect = word.getBoundingClientRect();
-        
-        clone.style.position = 'absolute';
-        clone.style.left = `${rect.left}px`;
-        clone.style.top = `${rect.top}px`;
-        clone.style.width = `${rect.width}px`;
-        clone.style.height = `${rect.height}px`;
-        animationContainer.appendChild(clone);
-        
-        word.style.visibility = 'hidden';
-        return clone;
-    });
-
-    // Animate clones to target position
-    const animations = clones.map((clone, index) => {
-        return clone.animate([
-            {
-                transform: 'translate(0, 0) scale(1)',
-                opacity: 1
-            },
-            {
-                transform: `translate(${targetPosition.x - clone.offsetLeft}px, 
-                          ${targetPosition.y - clone.offsetTop}px) scale(0.5)`,
-                opacity: 0.7
-            }
-        ], {
-            duration: 600,
-            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-            delay: index * 100
-        });
-    });
-
-    // Wait for all animations to complete
-    await Promise.all(animations.map(animation => animation.finished));
-
-    // Clean up
-    animationContainer.remove();
-    words.forEach(word => word.remove());
-
-    // Create category box
-    createCategoryBox(category);
-}
-
-function createCategoryBox(category) {
-    const categoryBox = document.createElement('div');
-    categoryBox.className = `category-box ${category.color} reveal`;
-    categoryBox.innerHTML = `
-        <div><strong>${category.name}</strong></div>
-        <div>${category.words.join(', ')}</div>
-    `;
-    
-    // Add initial hidden state
-    categoryBox.style.opacity = '0';
-    categoryBox.style.transform = 'translateY(20px)';
-    
-    // Add to container and animate
-    const container = document.getElementById('categoriesContainer');
-    container.appendChild(categoryBox);
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-        categoryBox.style.opacity = '1';
-        categoryBox.style.transform = 'translateY(0)';
-        categoryBox.style.transition = 'all 0.5s ease-out';
+            // Add the category to the categoriesContainer (like a correct guess)
+            const categoryBox = document.createElement('div');
+            categoryBox.className = `category-box ${category.color}`;
+            categoryBox.innerHTML = `
+                <div><strong>${category.name}</strong></div>
+                <div>${category.words.join(', ')}</div>
+            `;
+            document.getElementById('categoriesContainer').appendChild(categoryBox);
+        }, index * 1000); // 1-second delay between each category
     });
 }
 
@@ -288,7 +112,7 @@ function handleIncorrectSubmit() {
     if (remainingTries === 0) {
         gameActive = false;
         document.getElementById('message').textContent = "you were prob close lol..... or not";
-        revealAnswers();
+        revealAnswers(); // Reveal answers in the grid
     }
 }
 

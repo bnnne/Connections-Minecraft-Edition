@@ -31,7 +31,6 @@ h1 {
     gap: 10px;
     margin-bottom: 20px;
     width: 800px;
-    position: relative;
 }
 
 .word-box {
@@ -42,7 +41,6 @@ h1 {
     cursor: pointer;
     border-radius: 5px;
     user-select: none;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .word-box.selected {
@@ -125,50 +123,6 @@ button {
 #message .category-box div:first-child {
     font-weight: bold; /* Bold the category name */
     margin-bottom: 5px; /* Add spacing between the name and the words */
-}
-
-
-@keyframes mergeAnimation {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(0.5);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.category-box.reveal {
-    animation: fadeIn 0.5s ease-out;
-}
-
-.category-box.merged {
-    grid-column: 1 / -1;
-    animation: mergeIn 0.6s ease-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-@keyframes mergeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.animate-move {
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: absolute;
 }
 
 .category-box.purple { background-color: #B981C5; }

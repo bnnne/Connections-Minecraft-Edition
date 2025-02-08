@@ -1,25 +1,25 @@
 const categories = {
     purple: {
-        name: "unstackable items",
-        words: ["potion of fire resistance", "bed", "elytra", "shulker box"],
+        name: "items with a purple name",
+        words: ["dragon head", "elytra", "mace", "silence armor trim"],
         color: "purple",
         solved: false
     },
     blue: {
-        name: "piglin bartering experience",
-        words: ["piglin", "gold ingot", "obsidian", "ender pearls"],
+        name: "items with a blue name",
+        words: ["skull charge banner pattern", "wither skeleton skull", "music disc - pigstep", "vex armor trim"],
         color: "blue",
         solved: false
     },
     green: {
-        name: "can be fed into a beacon",
-        words: ["iron ingot", "netherite ingot", "diamond", "emerald"],
+        name: "items with a yellow name",
+        words: ["totem of undying", "skeleton skull", "music disc - cat", "dragon's breath"],
         color: "green",
         solved: false
     },
     yellow: {
-        name: "biomes that cant rain",
-        words: ["desert", "savanna", "nether", "the end"],
+        name: "items with a white name",
+        words: ["cat spawn egg", "raw cod", "string", "flower charge banner pattern"],
         color: "yellow",
         solved: false
     }

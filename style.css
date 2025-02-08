@@ -125,6 +125,26 @@ button {
     margin-bottom: 5px; /* Add spacing between the name and the words */
 }
 
+/* Add to style.css */
+.word-box {
+    transition: all 0.5s ease-in-out;
+    position: relative; /* Add this */
+}
+
+.word-box.animating {
+    z-index: 10;
+    transition: all 0.5s ease-in-out;
+}
+
+.category-box.reveal {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .category-box.purple { background-color: #B981C5; }
 .category-box.blue { background-color: #B0C3EF; }
 .category-box.green { background-color: #A1C35B; }

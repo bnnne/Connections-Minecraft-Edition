@@ -56,29 +56,19 @@ function submitGroup() {
 }
 
 function handleCorrectCategory(category) {
-    category.solved = true;
+    category.solved = true; // This marks the category as solved
     categoriesSolved++;
-    
-    // Create the category box
+
+    // Move words to category display
     const categoryBox = document.createElement('div');
     categoryBox.className = `category-box ${category.color}`;
-    
-    // Create a div for the category name (bolded)
-    const categoryName = document.createElement('div');
-    categoryName.textContent = category.name;
-    
-    // Create a div for the words
-    const categoryWords = document.createElement('div');
-    categoryWords.textContent = category.words.join(', ');
-    
-    // Append the name and words to the category box
-    categoryBox.appendChild(categoryName);
-    categoryBox.appendChild(categoryWords);
-    
-    // Add the category box to the container
+    categoryBox.innerHTML = `
+        <div><strong>${category.name}</strong></div>
+        <div>${category.words.join(', ')}</div>
+    `;
     document.getElementById('categoriesContainer').appendChild(categoryBox);
-    
-    // Remove the words from the grid
+
+    // Remove words from grid
     const gameGrid = document.getElementById('gameGrid');
     Array.from(gameGrid.children).forEach(box => {
         if (category.words.includes(box.textContent)) {
@@ -93,19 +83,27 @@ function revealAnswers() {
 
     // Sort unsolved categories by priority
     const unsolvedCategories = Object.values(categories)
-        .filter(category => !category.solved)
+        .filter(category => !category.solved) // Only include unsolved categories
         .sort((a, b) => categoryPriority.indexOf(a.color) - categoryPriority.indexOf(b.color));
 
     // Display answers one by one with a delay
     unsolvedCategories.forEach((category, index) => {
         setTimeout(() => {
-            const categoryBox = document.createElement('div');
-            categoryBox.className = `category-box ${category.color}`;
-            categoryBox.innerHTML = `
-                <div><strong>${category.name}</strong></div>
-                <div>${category.words.join(', ')}</div>
-            `;
-            messageDiv.appendChild(categoryBox);
+            // Check if the category box already exists in the message div
+            const existingBox = Array.from(messageDiv.children).find(child =>
+                child.textContent.includes(category.name)
+            );
+
+            // If the category box doesn't already exist, create and append it
+            if (!existingBox) {
+                const categoryBox = document.createElement('div');
+                categoryBox.className = `category-box ${category.color}`;
+                categoryBox.innerHTML = `
+                    <div><strong>${category.name}</strong></div>
+                    <div>${category.words.join(', ')}</div>
+                `;
+                messageDiv.appendChild(categoryBox);
+            }
         }, index * 1000); // 1-second delay between each category
     });
 }

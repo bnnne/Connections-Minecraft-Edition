@@ -112,6 +112,19 @@ button {
     margin-top: 20px;
 }
 
+#message .category-box {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    color: black; /* Ensure text is black */
+}
+
+#message .category-box div:first-child {
+    font-weight: bold; /* Bold the category name */
+    margin-bottom: 5px; /* Add spacing between the name and the words */
+}
+
 .category-box.purple { background-color: #B981C5; }
 .category-box.blue { background-color: #B0C3EF; }
 .category-box.green { background-color: #A1C35B; }

@@ -62,7 +62,7 @@ function handleCorrectCategory(category) {
     // Move words to category display
     const categoryBox = document.createElement('div');
     categoryBox.className = `category-box ${category.color}`;
-    categoryBox.innerHTML = `<div>${category.name}</div><div>${category.words.join(', ')}</div>`;
+    categoryBox.innerHTML = `<div><strong>${category.name}</strong></div><div>${category.words.join(', ')}</div>`;
     document.getElementById('categoriesContainer').appendChild(categoryBox);
     
     // Remove words from grid

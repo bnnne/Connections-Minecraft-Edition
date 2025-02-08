@@ -59,13 +59,26 @@ function handleCorrectCategory(category) {
     category.solved = true;
     categoriesSolved++;
     
-    // Move words to category display
+    // Create the category box
     const categoryBox = document.createElement('div');
     categoryBox.className = `category-box ${category.color}`;
-    categoryBox.innerHTML = `<div><strong>${category.name}</strong></div><div>${category.words.join(', ')}</div>`;
+    
+    // Create a div for the category name (bolded)
+    const categoryName = document.createElement('div');
+    categoryName.textContent = category.name;
+    
+    // Create a div for the words
+    const categoryWords = document.createElement('div');
+    categoryWords.textContent = category.words.join(', ');
+    
+    // Append the name and words to the category box
+    categoryBox.appendChild(categoryName);
+    categoryBox.appendChild(categoryWords);
+    
+    // Add the category box to the container
     document.getElementById('categoriesContainer').appendChild(categoryBox);
     
-    // Remove words from grid
+    // Remove the words from the grid
     const gameGrid = document.getElementById('gameGrid');
     Array.from(gameGrid.children).forEach(box => {
         if (category.words.includes(box.textContent)) {

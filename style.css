@@ -27,15 +27,8 @@ h1 {
     padding: 15px;
     text-align: center;
     cursor: pointer;
-    border-radius: 10px; /* Rounded corners */
+    border-radius: 5px;
     user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 80px; /* Fixed height */
-    font-size: 14px; /* Adjust font size to fit text */
-    box-sizing: border-box; /* Ensure padding is included in the height/width */
-    word-break: break-word; /* Handle long words */
 }
 
 .word-box.selected {
@@ -49,7 +42,7 @@ h1 {
 }
 
 .category-box {
-    color: white;
+    color: black;
     padding: 15px;
     margin: 5px 0;
     border-radius: 5px;
@@ -101,7 +94,7 @@ button {
     margin-top: 20px;
 }
 
-.category-box.purple { background-color: #8A2BE2; }
-.category-box.blue { background-color: #1E90FF; }
-.category-box.green { background-color: #228B22; }
-.category-box.yellow { background-color: #FFD700; }
+.category-box.purple { background-color: #B981C5; }
+.category-box.blue { background-color: #B0C3EF; }
+.category-box.green { background-color: #A1C35B; }
+.category-box.yellow { background-color: #F8DF6B; }
